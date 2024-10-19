@@ -7,5 +7,5 @@ import jakarta.persistence.*;
 public class Crew {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Long id;
+    private String id;
 }
