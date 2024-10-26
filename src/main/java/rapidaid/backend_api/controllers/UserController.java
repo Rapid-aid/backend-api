@@ -1,8 +1,13 @@
 package rapidaid.backend_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import rapidaid.backend_api.models.DTOs.UserDTO;
+import rapidaid.backend_api.models.User;
 import rapidaid.backend_api.services.UserService;
+
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -14,27 +19,27 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public String getAllUsers(){
-        return "getAllUsers";
+    public List<User> getAllUsers(){
+        return userService.getAllUsers();
     }
 
-    @PostMapping("/users")
-    public String createUser(){
-        return "createUser";
+    @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User createUser(@RequestBody UserDTO userDTO) {
+        return userService.registerUser(userDTO);
     }
 
     @GetMapping("/users/{id}")
-    public String getUser(@PathVariable Integer id){
-        return "getUser " + id;
+    public User getUser(@PathVariable String id){
+        return userService.getUserById(id);
     }
 
     @PutMapping("/users/{id}")
-    public String updateUser(@PathVariable Integer id){
+    public String updateUser(@PathVariable String id){
         return "updateUser " + id;
     }
 
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Integer id){
-        return "deleteUser " + id;
+    public Boolean deleteUser(@PathVariable String id){
+        return userService.deleteUser(id);
     }
 }
