@@ -1,17 +1,15 @@
 package rapidaid.backend_api.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import rapidaid.backend_api.models.enums.Role;
 
 @Entity
 @Table(name = "USERS")
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -19,11 +17,14 @@ public class User {
 
     @Column(nullable = false, unique = true)
     private String username;
-    @Column(nullable = false, length = 60)
+    @Column(nullable = false)
     private String password;
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
-    private String role;
-
+    private Role role;
+    @Column(nullable = false)
+    private String address;
+    @Column(nullable = false)
+    private String phoneNumber;
 }

@@ -1,9 +1,11 @@
 package rapidaid.backend_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import rapidaid.backend_api.models.DTOs.CreateUserDTO;
+import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
+import rapidaid.backend_api.models.DTOs.mappers.UserMapper;
 import rapidaid.backend_api.models.User;
 import rapidaid.backend_api.services.UserService;
 
@@ -11,7 +13,7 @@ import java.util.List;
 
 @RestController
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
     public UserController(UserService userService){
@@ -23,9 +25,9 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User createUser(@RequestBody UserDTO userDTO) {
-        return userService.registerUser(userDTO);
+    @PostMapping(value = "/register")
+    public UserDTO createUser(@RequestBody CreateUserDTO createUserDTO){
+        return userService.registerUser(UserMapper.mapToUser(createUserDTO));
     }
 
     @GetMapping("/users/{id}")
@@ -34,8 +36,8 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public String updateUser(@PathVariable String id){
-        return "updateUser " + id;
+    public UserDTO updateUser(@PathVariable String id, @RequestBody UpdateUserDTO updateUserDTO){
+        return userService.updateUser(id, updateUserDTO);
     }
 
     @DeleteMapping("/users/{id}")
