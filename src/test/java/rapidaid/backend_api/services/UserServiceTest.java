@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import rapidaid.backend_api.models.ChangePassword;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.User;
@@ -115,7 +116,29 @@ public class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> userService.updateUser(userId, updateUserDTO));
-        verify(userRepository).findById(userId);
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    public void changePassword_whenUserExists_thenShouldChangePassword() {
+        String email = "test@example.com";
+        ChangePassword changePassword = new ChangePassword(email, "newPassword");
+        User user = User.builder().email(email).password("oldPassword").build();
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+        userService.changePassword(changePassword);
+
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    public void changePassword_whenUserDoesNotExist_thenShouldThrowIllegalArgumentException() {
+        String email = "test@example.com";
+        ChangePassword changePassword = new ChangePassword(email, "newPassword");
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> userService.changePassword(changePassword));
         verify(userRepository, never()).save(any(User.class));
     }
 

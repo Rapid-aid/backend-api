@@ -2,6 +2,7 @@ package rapidaid.backend_api.services;
 
 
 import org.springframework.stereotype.Service;
+import rapidaid.backend_api.models.ChangePassword;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.DTOs.mappers.UserMapper;
@@ -58,6 +59,16 @@ public class UserService {
         }
         userRepository.save(user);
         return UserMapper.mapToUserDTO(user);
+    }
+
+    public void changePassword(ChangePassword changePassword) {
+        userRepository.findByEmail(changePassword.getEmail())
+                .ifPresentOrElse(user -> {
+                    user.setPassword(changePassword.getNewPassword());
+                    userRepository.save(user);
+                }, () -> {
+                    throw new IllegalArgumentException("User not found");
+                });
     }
 
     public Boolean deleteUser(String id) {

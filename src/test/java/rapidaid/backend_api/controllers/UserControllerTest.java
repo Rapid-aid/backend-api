@@ -87,6 +87,18 @@ public class UserControllerTest {
     }
 
     @Test
+    public void shouldChangePassword() throws Exception {
+        String changePassword = "{\"email\":\"test@example.com\",\"newPassword\":\"newPassword\"}";
+
+        doNothing().when(userService).changePassword(any());
+
+        mockMvc.perform(put("/users/changePassword")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(changePassword))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     public void shouldDeleteUser() throws Exception {
         User user = User.builder().id("1").username("testUser1").password("password").email("test1@exapmle.com").role(Role.RESPONDER).build();
         when(userService.deleteUser(user.getId())).thenReturn(true);
