@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import rapidaid.backend_api.models.DTOs.CreateUserDTO;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.User;
@@ -44,18 +45,17 @@ public class UserControllerTest {
     public void shouldCreateUser() throws Exception {
         String createUserDTO = "{\"username\":\"testUser\",\"password\":\"password\",\"email\":\"test@example.com\",\"address\":\"test address\",\"phoneNumber\":\"123456789\"}";
         UserDTO userDTO = UserDTO.builder().username("testUser").email("test@example.com").build();
-        when(userService.registerUser(any(User.class))).thenReturn(userDTO);
+        when(userService.registerUser(any(CreateUserDTO.class))).thenReturn(userDTO);
 
         mockMvc.perform(post("/register")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(createUserDTO))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createUserDTO))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value(userDTO.getUsername()))
                 .andExpect(jsonPath("$.email").value(userDTO.getEmail()))
                 .andExpect(jsonPath("$.role").value(userDTO.getRole()));
 
-
-        verify(userService).registerUser(any(User.class));
+        verify(userService, times(1)).registerUser(any(CreateUserDTO.class));
     }
 
     @Test
@@ -88,13 +88,13 @@ public class UserControllerTest {
 
     @Test
     public void shouldChangePassword() throws Exception {
-        String changePassword = "{\"email\":\"test@example.com\",\"newPassword\":\"newPassword\"}";
+        String changePasswordDTO = "{\"email\":\"test@example.com\",\"newPassword\":\"newPassword\"}";
 
         doNothing().when(userService).changePassword(any());
 
         mockMvc.perform(put("/users/changePassword")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(changePassword))
+                        .content(changePasswordDTO))
                 .andExpect(status().isOk());
     }
 

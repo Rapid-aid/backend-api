@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import rapidaid.backend_api.models.ChangePassword;
+import rapidaid.backend_api.models.DTOs.ChangePasswordDTO;
+import rapidaid.backend_api.models.DTOs.CreateUserDTO;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.User;
@@ -74,23 +75,23 @@ public class UserServiceTest {
 
     @Test
     public void registerUser_whenEmailOrUsernameExist_thenShouldThrowException(){
-        User user = User.builder().username("testUser").email("test@example.com").password("password").build();
-        when(userRepository.existsByEmail(user.getEmail())).thenReturn(true);
+        CreateUserDTO createUserDTO = CreateUserDTO.builder().username("testUser").email("test@example.com").password("password").build();
+        when(userRepository.existsByEmail(createUserDTO.getEmail())).thenReturn(true);
 
-        assertThrows(IllegalArgumentException.class, () -> userService.registerUser(user));
+        assertThrows(IllegalArgumentException.class, () -> userService.registerUser(createUserDTO));
     }
 
     @Test
     public void registerUser_whenEmailDoesNotExist_thenShouldReturnUser() {
-        User user = User.builder().username("testUser").email("test@example.com").password("password").build();
-        when(userRepository.existsByEmail(user.getEmail())).thenReturn(false);
-        when(userRepository.existsByUsername(user.getUsername())).thenReturn(false);
+        CreateUserDTO createUserDTO = CreateUserDTO.builder().username("testUser").email("test@example.com").password("password").build();
+        when(userRepository.existsByEmail(createUserDTO.getEmail())).thenReturn(false);
+        when(userRepository.existsByUsername(createUserDTO.getUsername())).thenReturn(false);
 
-        UserDTO userCreated = userService.registerUser(user);
+        UserDTO userCreated = userService.registerUser(createUserDTO);
 
         assertNotNull(userCreated);
-        assertEquals(user.getUsername(), userCreated.getUsername());
-        assertEquals(user.getEmail(), userCreated.getEmail());
+        assertEquals(createUserDTO.getUsername(), userCreated.getUsername());
+        assertEquals(createUserDTO.getEmail(), userCreated.getEmail());
         verify(userRepository, times(1)).save(any(User.class));
     }
 
@@ -123,11 +124,11 @@ public class UserServiceTest {
     @Test
     public void changePassword_whenUserExists_thenShouldChangePassword() {
         String email = "test@example.com";
-        ChangePassword changePassword = new ChangePassword(email, "newPassword");
+        ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO(email, "newPassword");
         User user = User.builder().email(email).password("oldPassword").build();
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
-        userService.changePassword(changePassword);
+        userService.changePassword(changePasswordDTO);
 
         verify(userRepository, times(1)).save(any(User.class));
     }
@@ -135,10 +136,10 @@ public class UserServiceTest {
     @Test
     public void changePassword_whenUserDoesNotExist_thenShouldThrowIllegalArgumentException() {
         String email = "test@example.com";
-        ChangePassword changePassword = new ChangePassword(email, "newPassword");
+        ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO(email, "newPassword");
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> userService.changePassword(changePassword));
+        assertThrows(IllegalArgumentException.class, () -> userService.changePassword(changePasswordDTO));
         verify(userRepository, never()).save(any(User.class));
     }
 
