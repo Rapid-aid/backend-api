@@ -2,13 +2,10 @@ package rapidaid.backend_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import rapidaid.backend_api.models.ChangePassword;
 import rapidaid.backend_api.models.DTOs.ChangePasswordDTO;
 import rapidaid.backend_api.models.DTOs.CreateUserDTO;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
-import rapidaid.backend_api.models.DTOs.mappers.ChangePasswordMapper;
-import rapidaid.backend_api.models.DTOs.mappers.UserMapper;
 import rapidaid.backend_api.models.User;
 import rapidaid.backend_api.services.UserService;
 
@@ -30,11 +27,11 @@ public class UserController {
 
     @PostMapping(value = "/register")
     public UserDTO createUser(@RequestBody CreateUserDTO createUserDTO){
-        return userService.registerUser(UserMapper.mapToUser(createUserDTO));
+        return userService.registerUser(createUserDTO);
     }
     @PutMapping("/change-password")
     public void changePassword(@RequestBody ChangePasswordDTO changePasswordDTO){
-        userService.changePassword(ChangePasswordMapper.mapToChangePassword(changePasswordDTO));
+        userService.changePassword(changePasswordDTO);
     }
 
     @GetMapping("/users/{id}")

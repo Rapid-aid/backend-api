@@ -2,7 +2,8 @@ package rapidaid.backend_api.services;
 
 
 import org.springframework.stereotype.Service;
-import rapidaid.backend_api.models.ChangePassword;
+import rapidaid.backend_api.models.DTOs.ChangePasswordDTO;
+import rapidaid.backend_api.models.DTOs.CreateUserDTO;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.DTOs.mappers.UserMapper;
@@ -28,7 +29,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public UserDTO registerUser(User user) {
+    public UserDTO registerUser(CreateUserDTO createUserDTO) {
+        User user = UserMapper.mapToUser(createUserDTO);
         if (userRepository.existsByEmail(user.getEmail()) || userRepository.existsByUsername(user.getUsername())) {
             throw new IllegalArgumentException("Any account with email or name already exists");
         }
@@ -61,10 +63,10 @@ public class UserService {
         return UserMapper.mapToUserDTO(user);
     }
 
-    public void changePassword(ChangePassword changePassword) {
-        userRepository.findByEmail(changePassword.getEmail())
+    public void changePassword(ChangePasswordDTO changePasswordDTO) {
+        userRepository.findByEmail(changePasswordDTO.getEmail())
                 .ifPresentOrElse(user -> {
-                    user.setPassword(changePassword.getNewPassword());
+                    user.setPassword(changePasswordDTO.getNewPassword());
                     userRepository.save(user);
                 }, () -> {
                     throw new IllegalArgumentException("User not found");
