@@ -2,11 +2,14 @@ package rapidaid.backend_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import rapidaid.backend_api.models.DTOs.CrewDTO;
 import rapidaid.backend_api.services.CrewService;
+
+import java.util.List;
 
 @RestController
 public class CrewController {
-    private CrewService crewService;
+    private final CrewService crewService;
 
     @Autowired
     public CrewController(CrewService crewService){
@@ -14,18 +17,18 @@ public class CrewController {
     }
 
     @GetMapping("/crews")
-    public String getAllCrews(){
-        return "getAllCrews";
+    public List<CrewDTO> getAllCrews(){
+        return crewService.getAllCrews();
     }
 
     @PostMapping("/crews")
-    public String createCrew(){
-        return "createCrew";
+    public CrewDTO createCrew(@RequestBody CrewDTO crewDTO){
+        return crewService.createCrew(crewDTO);
     }
 
     @GetMapping("/crews/{id}")
-    public String getCrew(@PathVariable Integer id){
-        return "getCrew " + id;
+    public CrewDTO getCrew(@PathVariable String id){
+        return crewService.getCrewById(id);
     }
 
     @PutMapping("/crews/{id}")
@@ -38,7 +41,7 @@ public class CrewController {
     }
 
     @DeleteMapping("/crews/{id}")
-    public String deleteCrew(@PathVariable Integer id){
-        return "deleteCrew " + id;
+    public Boolean deleteCrew(@PathVariable String id){
+        return crewService.deleteCrew(id);
     }
 }
