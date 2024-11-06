@@ -22,4 +22,13 @@ public class EmergencyMapper {
                 .status(emergency.getStatus())
                 .build();
     }
+    public static Emergency mapToEmergency(EmergencyDTO EmergencyDTO) {
+        return Emergency.builder()
+                .description(EmergencyDTO.getDescription())
+                .location(EmergencyDTO.getLocation())
+                .numberOfPeople(EmergencyDTO.getNumberOfPeople())
+                .priorityLevel(EmergencyDTO.getPriorityLevel())
+                .status(EmergencyDTO.getStatus())
+                .build();
+    }
 }

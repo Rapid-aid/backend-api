@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EmergencyMapperTest {
     @Test
-    void testMapEmergencyDTOToEmergency() {
+    void testMapCreateEmergencyDTOToEmergency() {
         CreateEmergencyDTO createEmergencyDTO = CreateEmergencyDTO.builder()
                 .description("testDescription")
                 .location("testLocation")
@@ -44,5 +44,25 @@ public class EmergencyMapperTest {
         assertEquals(emergency.getNumberOfPeople(), emergencyDTO.getNumberOfPeople());
         assertEquals(emergency.getPriorityLevel(), emergencyDTO.getPriorityLevel());
         assertEquals(emergency.getStatus(), emergencyDTO.getStatus());
+    }
+
+    @Test
+    void testMapEmergencyDTOToEmergency() {
+        EmergencyDTO emergencyDTO = EmergencyDTO.builder()
+                .description("testDescription")
+                .location("testLocation")
+                .numberOfPeople(10)
+                .priorityLevel(PriorityLevel.CRITICAL)
+                .status(Status.PENDING)
+                .build();
+
+        Emergency emergency = EmergencyMapper.mapToEmergency(emergencyDTO);
+
+        assertNotNull(emergency);
+        assertEquals(emergencyDTO.getDescription(), emergency.getDescription());
+        assertEquals(emergencyDTO.getLocation(), emergency.getLocation());
+        assertEquals(emergencyDTO.getNumberOfPeople(), emergency.getNumberOfPeople());
+        assertEquals(emergencyDTO.getPriorityLevel(), emergency.getPriorityLevel());
+        assertEquals(emergencyDTO.getStatus(), emergency.getStatus());
     }
 }
