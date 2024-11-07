@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import rapidaid.backend_api.models.DTOs.CreateEmergencyDTO;
 import rapidaid.backend_api.models.DTOs.EmergencyDTO;
+import rapidaid.backend_api.models.enums.Status;
+import rapidaid.backend_api.models.enums.Type;
 import rapidaid.backend_api.services.EmergenceService;
 
 import java.util.List;
@@ -30,6 +32,11 @@ public class EmergenceController {
     @GetMapping("/emergencies/{id}")
     public EmergencyDTO getEmergence(@PathVariable String id){
         return emergenceService.getEmergence(id);
+    }
+
+    @GetMapping("/emergencies/search")
+    public List<EmergencyDTO> searchEmergencies(@RequestParam(required = false) String type, @RequestParam(required = false) String status, @RequestParam(required = false) String keyword){
+        return emergenceService.searchEmergencies(type, status, keyword);
     }
 
     @PutMapping("/emergencies/{id}")

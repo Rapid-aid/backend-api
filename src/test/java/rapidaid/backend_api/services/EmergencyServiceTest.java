@@ -9,6 +9,9 @@ import rapidaid.backend_api.models.DTOs.CreateEmergencyDTO;
 import rapidaid.backend_api.models.DTOs.EmergencyDTO;
 import rapidaid.backend_api.models.DTOs.mappers.EmergencyMapper;
 import rapidaid.backend_api.models.Emergency;
+import rapidaid.backend_api.models.enums.PriorityLevel;
+import rapidaid.backend_api.models.enums.Status;
+import rapidaid.backend_api.models.enums.Type;
 import rapidaid.backend_api.repositories.EmergenceRepository;
 
 import java.util.List;
@@ -33,13 +36,21 @@ public class EmergencyServiceTest {
     @Test
     public void getAllEmergencies_whenEmergenciesExist_thenShouldReturnEmergencyDTOList() {
         EmergencyDTO emergencyDTO1 = EmergencyDTO.builder()
-                .location("testLocation1")
+                .numberOfPeople(1)
+                .type(Type.FIRE)
+                .status(Status.PENDING)
                 .description("testDescription1")
-                .numberOfPeople(1).build();
+                .priorityLevel(PriorityLevel.HIGH)
+                .latitude(1.0)
+                .longitude(1.0).build();
         EmergencyDTO emergencyDTO2 = EmergencyDTO.builder()
-                .location("testLocation2")
+                .numberOfPeople(2)
+                .type(Type.ACCIDENT)
+                .status(Status.CANCELLED)
                 .description("testDescription2")
-                .numberOfPeople(2).build();
+                .priorityLevel(PriorityLevel.LOW)
+                .latitude(2.0)
+                .longitude(2.0).build();
 
         when(emergenceRepository.findAll()).thenReturn(List.of(EmergencyMapper.mapToEmergency(emergencyDTO1), EmergencyMapper.mapToEmergency(emergencyDTO2)));
 
@@ -66,14 +77,17 @@ public class EmergencyServiceTest {
     @Test
     public void createEmergence_whenEmergenciesNotExist_thenShouldReturnEmergencyDTO() {
         CreateEmergencyDTO createEmergencyDTO = CreateEmergencyDTO.builder()
-                .location("testLocation")
+                .numberOfPeople(5)
+                .type(Type.FIRE)
                 .description("testDescription")
-                .numberOfPeople(5).build();
+                .latitude(1.0)
+                .longitude(1.0).build();
 
         EmergencyDTO emergencyDTO = emergenceService.createEmergence(createEmergencyDTO);
 
         assertNotNull(emergencyDTO);
-        assertEquals(createEmergencyDTO.getLocation(), emergencyDTO.getLocation());
+        assertEquals(createEmergencyDTO.getLatitude(), emergencyDTO.getLatitude());
+        assertEquals(createEmergencyDTO.getLongitude(), emergencyDTO.getLongitude());
         assertEquals(createEmergencyDTO.getDescription(), emergencyDTO.getDescription());
         assertEquals(createEmergencyDTO.getNumberOfPeople(), emergencyDTO.getNumberOfPeople());
         verify(emergenceRepository, times(1)).save(any(Emergency.class));
@@ -83,9 +97,13 @@ public class EmergencyServiceTest {
     public void getEmergence_whenEmergencyExists_thenShouldReturnEmergencyDTO() {
         String emergencyId = "1";
         EmergencyDTO emergencyDTO = EmergencyDTO.builder()
-                .location("testLocation")
+                .numberOfPeople(1)
+                .type(Type.FIRE)
+                .status(Status.PENDING)
                 .description("testDescription")
-                .numberOfPeople(1).build();
+                .priorityLevel(PriorityLevel.HIGH)
+                .latitude(1.0)
+                .longitude(1.0).build();
 
         when(emergenceRepository.findById(emergencyId)).thenReturn(java.util.Optional.of(EmergencyMapper.mapToEmergency(emergencyDTO)));
 
@@ -107,12 +125,54 @@ public class EmergencyServiceTest {
     }
 
     @Test
+    public void searchEmergencies_whenEmergenciesHaveSameTypeAndStatus_thenShouldReturnEmergencyDTOList() {
+        Type type = Type.FIRE;
+        Status status = Status.PENDING;
+        String keyword = "testDescription";
+        EmergencyDTO emergencyDTO = EmergencyDTO.builder()
+                .numberOfPeople(1)
+                .type(Type.FIRE)
+                .status(Status.PENDING)
+                .description("testDescription")
+                .priorityLevel(PriorityLevel.HIGH)
+                .latitude(1.0)
+                .longitude(1.0).build();
+
+        when(emergenceRepository.searchEmergencies(type, status, keyword)).thenReturn(List.of(EmergencyMapper.mapToEmergency(emergencyDTO)));
+
+        List<EmergencyDTO> emergencyDTOList = emergenceService.searchEmergencies(type.toString(), status.toString(), keyword);
+
+        assertNotNull(emergencyDTOList);
+        assertEquals(1, emergencyDTOList.size());
+        assertEquals(emergencyDTO, emergencyDTOList.getFirst());
+        verify(emergenceRepository, times(1)).searchEmergencies(type, status, keyword);
+    }
+
+    @Test
+    public void searchEmergencies_whenEmergenciesHaveDifferentTypeAndStatus_thenShouldReturnEmptyList() {
+        Type type = Type.FIRE;
+        Status status = Status.PENDING;
+
+        when(emergenceRepository.searchEmergencies(type, status, null)).thenReturn(List.of());
+
+        List<EmergencyDTO> emergencyDTOList = emergenceService.searchEmergencies(type.toString(), status.toString(), null);
+
+        assertNotNull(emergencyDTOList);
+        assertEquals(0, emergencyDTOList.size());
+        verify(emergenceRepository, times(1)).searchEmergencies(type, status, null);
+    }
+
+    @Test
     public void updateEmergence_whenEmergencyExists_thenShouldReturnEmergencyDTO() {
         String emergencyId = "1";
         EmergencyDTO emergencyDTO = EmergencyDTO.builder()
-                .location("testLocation")
+                .numberOfPeople(1)
+                .type(Type.FIRE)
+                .status(Status.PENDING)
                 .description("testDescription")
-                .numberOfPeople(1).build();
+                .priorityLevel(PriorityLevel.HIGH)
+                .latitude(1.0)
+                .longitude(1.0).build();
         Emergency emergency = EmergencyMapper.mapToEmergency(emergencyDTO);
 
         when(emergenceRepository.findById(emergencyId)).thenReturn(java.util.Optional.of(emergency));
@@ -130,9 +190,13 @@ public class EmergencyServiceTest {
     public void updateEmergence_whenEmergencyNotExists_thenShouldThrowIllegalArgumentException() {
         String emergencyId = "1";
         EmergencyDTO emergencyDTO = EmergencyDTO.builder()
-                .location("testLocation")
+                .numberOfPeople(1)
+                .type(Type.FIRE)
+                .status(Status.PENDING)
                 .description("testDescription")
-                .numberOfPeople(1).build();
+                .priorityLevel(PriorityLevel.HIGH)
+                .latitude(1.0)
+                .longitude(1.0).build();
 
         when(emergenceRepository.findById(emergencyId)).thenReturn(java.util.Optional.empty());
 

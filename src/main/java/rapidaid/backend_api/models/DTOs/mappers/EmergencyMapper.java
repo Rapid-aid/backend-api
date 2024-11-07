@@ -8,27 +8,33 @@ public class EmergencyMapper {
 
     public static Emergency mapToEmergency(CreateEmergencyDTO emergencyDTO) {
         return Emergency.builder()
-                .description(emergencyDTO.getDescription())
-                .location(emergencyDTO.getLocation())
                 .numberOfPeople(emergencyDTO.getNumberOfPeople())
+                .type(emergencyDTO.getType())
+                .description(emergencyDTO.getDescription())
+                .latitude(emergencyDTO.getLatitude())
+                .longitude(emergencyDTO.getLongitude())
                 .build();
     }
     public static EmergencyDTO mapToEmergencyDTO(Emergency emergency) {
         return EmergencyDTO.builder()
-                .description(emergency.getDescription())
-                .location(emergency.getLocation())
                 .numberOfPeople(emergency.getNumberOfPeople())
-                .priorityLevel(emergency.getPriorityLevel())
+                .type(emergency.getType())
                 .status(emergency.getStatus())
+                .description(emergency.getDescription())
+                .priorityLevel(emergency.getPriorityLevel())
+                .longitude(emergency.getLongitude())
+                .latitude(emergency.getLatitude())
                 .build();
     }
-    public static Emergency mapToEmergency(EmergencyDTO EmergencyDTO) {
+    public static Emergency mapToEmergency(EmergencyDTO emergencyDTO) {
         return Emergency.builder()
-                .description(EmergencyDTO.getDescription())
-                .location(EmergencyDTO.getLocation())
-                .numberOfPeople(EmergencyDTO.getNumberOfPeople())
-                .priorityLevel(EmergencyDTO.getPriorityLevel())
-                .status(EmergencyDTO.getStatus())
+                .numberOfPeople(emergencyDTO.getNumberOfPeople())
+                .type(emergencyDTO.getType())
+                .status(emergencyDTO.getStatus())
+                .description(emergencyDTO.getDescription())
+                .priorityLevel(emergencyDTO.getPriorityLevel())
+                .latitude(emergencyDTO.getLatitude())
+                .longitude(emergencyDTO.getLongitude())
                 .build();
     }
 }

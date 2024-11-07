@@ -7,6 +7,7 @@ import rapidaid.backend_api.models.DTOs.EmergencyDTO;
 import rapidaid.backend_api.models.DTOs.mappers.EmergencyMapper;
 import rapidaid.backend_api.models.Emergency;
 import rapidaid.backend_api.models.enums.Status;
+import rapidaid.backend_api.models.enums.Type;
 import rapidaid.backend_api.repositories.EmergenceRepository;
 
 import java.util.List;
@@ -42,19 +43,36 @@ public class EmergenceService {
         return EmergencyMapper.mapToEmergencyDTO(emergenceRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Emergency not found")));
     }
 
+    public List<EmergencyDTO> searchEmergencies(String type, String status, String keyword) {
+        Type typeEnum = type != null ? Type.valueOf(type) : null;
+        Status statusEnum = status != null ? Status.valueOf(status) : null;
+        return emergenceRepository.searchEmergencies(typeEnum, statusEnum, keyword).stream()
+                .map(EmergencyMapper::mapToEmergencyDTO)
+                .toList();
+    }
+
     public EmergencyDTO updateEmergence(String id, EmergencyDTO emergencyDTO) {
         Emergency emergency = emergenceRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Emergency not found"));
-        if (emergencyDTO.getLocation() != null) {
-            emergency.setLocation(emergencyDTO.getLocation());
+        if (emergencyDTO.getNumberOfPeople() != null) {
+            emergency.setNumberOfPeople(emergencyDTO.getNumberOfPeople());
+        }
+        if (emergencyDTO.getType() != null) {
+            emergency.setType(emergencyDTO.getType());
+        }
+        if (emergencyDTO.getStatus() != null) {
+            emergency.setStatus(emergencyDTO.getStatus());
         }
         if (emergencyDTO.getDescription() != null) {
             emergency.setDescription(emergencyDTO.getDescription());
         }
-        if (emergencyDTO.getNumberOfPeople() != null) {
-            emergency.setNumberOfPeople(emergencyDTO.getNumberOfPeople());
+        if (emergencyDTO.getPriorityLevel() != null) {
+            emergency.setPriorityLevel(emergencyDTO.getPriorityLevel());
         }
-        if (emergencyDTO.getStatus() != null) {
-            emergency.setStatus(emergencyDTO.getStatus());
+        if (emergencyDTO.getLatitude() != null) {
+            emergency.setLatitude(emergencyDTO.getLatitude());
+        }
+        if (emergencyDTO.getLongitude() != null) {
+            emergency.setLongitude(emergencyDTO.getLongitude());
         }
         emergenceRepository.save(emergency);
         return EmergencyMapper.mapToEmergencyDTO(emergency);
