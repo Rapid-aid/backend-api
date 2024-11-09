@@ -1,9 +1,8 @@
 package rapidaid.backend_api.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import rapidaid.backend_api.models.DTOs.ChangePasswordDTO;
-import rapidaid.backend_api.models.DTOs.CreateUserDTO;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.User;
@@ -12,23 +11,15 @@ import rapidaid.backend_api.services.UserService;
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 public class UserController {
     private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService){
-        this.userService = userService;
-    }
 
     @GetMapping("/users")
     public List<User> getAllUsers(){
         return userService.getAllUsers();
     }
 
-    @PostMapping(value = "/register")
-    public UserDTO createUser(@RequestBody CreateUserDTO createUserDTO){
-        return userService.registerUser(createUserDTO);
-    }
     @PutMapping("/change-password")
     public void changePassword(@RequestBody ChangePasswordDTO changePasswordDTO){
         userService.changePassword(changePasswordDTO);
