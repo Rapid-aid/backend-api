@@ -27,9 +27,12 @@ public class EmergenceControllerTest {
     }
     @Test
     public void shouldCreateEmergence() throws Exception {
-        mockMvc.perform(post("/emergencies"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("createEmergence"));
+        String createEmergencyDTO = "{\"location\":\"testLocation\",\"description\":\"testDescription\",\"numberOfPeople\":1}";
+
+        mockMvc.perform(post("/emergencies")
+                    .contentType("application/json")
+                    .content(createEmergencyDTO))
+                .andExpect(status().isOk());
     }
     @Test
     public void shouldReturnEmergenceById() throws Exception {

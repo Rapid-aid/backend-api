@@ -2,11 +2,13 @@ package rapidaid.backend_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import rapidaid.backend_api.models.DTOs.CreateEmergencyDTO;
+import rapidaid.backend_api.models.DTOs.EmergencyDTO;
 import rapidaid.backend_api.services.EmergenceService;
 
 @RestController
 public class EmergenceController {
-    private EmergenceService emergenceService;
+    private final EmergenceService emergenceService;
 
     @Autowired
     public EmergenceController(EmergenceService emergenceService){
@@ -19,8 +21,8 @@ public class EmergenceController {
     }
 
     @PostMapping("/emergencies")
-    public String createEmergence(){
-        return "createEmergence";
+    public EmergencyDTO createEmergence(@RequestBody CreateEmergencyDTO createEmergencyDTO){
+        return emergenceService.createEmergence(createEmergencyDTO);
     }
 
     @GetMapping("/emergencies/{id}")
