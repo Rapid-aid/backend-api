@@ -8,7 +8,7 @@ import rapidaid.backend_api.models.DTOs.mappers.EmergencyMapper;
 import rapidaid.backend_api.models.Emergency;
 import rapidaid.backend_api.models.enums.Status;
 import rapidaid.backend_api.repositories.EmergenceRepository;
-import rapidaid.backend_api.services.websocket.WebSocketService;
+import rapidaid.backend_api.websocket.service.WebSocketService;
 
 @Service
 public class EmergenceService {

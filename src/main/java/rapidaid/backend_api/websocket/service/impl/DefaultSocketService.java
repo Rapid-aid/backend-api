@@ -1,9 +1,11 @@
-package rapidaid.backend_api.services.websocket.impl;
+package rapidaid.backend_api.websocket.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import rapidaid.backend_api.services.websocket.WebSocketService;
+import rapidaid.backend_api.websocket.message.Message;
+import rapidaid.backend_api.websocket.message.MessageType;
+import rapidaid.backend_api.websocket.service.WebSocketService;
 
 @Service
 public class DefaultSocketService implements WebSocketService {
@@ -16,6 +18,7 @@ public class DefaultSocketService implements WebSocketService {
 
     @Override
     public void notify(String emergencyId) {
-        template.convertAndSend("/topic/emergency", emergencyId);
+        Message message = new Message(MessageType.emergencyNotification, emergencyId);
+        template.convertAndSend("/topic/emergency", message);
     }
 }

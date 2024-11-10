@@ -9,7 +9,7 @@ import rapidaid.backend_api.models.DTOs.CreateEmergencyDTO;
 import rapidaid.backend_api.models.DTOs.EmergencyDTO;
 import rapidaid.backend_api.models.Emergency;
 import rapidaid.backend_api.repositories.EmergenceRepository;
-import rapidaid.backend_api.services.websocket.WebSocketService;
+import rapidaid.backend_api.websocket.service.WebSocketService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
