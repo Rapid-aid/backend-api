@@ -1,23 +1,13 @@
-package rapidaid.backend_api.models;
+package rapidaid.backend_api.models.DTOs;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import rapidaid.backend_api.models.enums.CrewStatus;
 import rapidaid.backend_api.models.enums.CrewType;
 
-@Entity
-@Table(name = "CREWS")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-public class Crew {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+public class CrewDTO {
     private Integer crewCount;
     private CrewType crewType;
     private CrewStatus crewStatus;
