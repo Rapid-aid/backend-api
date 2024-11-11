@@ -3,6 +3,7 @@ package rapidaid.backend_api.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rapidaid.backend_api.models.Crew;
+import rapidaid.backend_api.models.DTOs.ChangeLocationCrewDTO;
 import rapidaid.backend_api.models.DTOs.CrewDTO;
 import rapidaid.backend_api.models.DTOs.mappers.CrewMapper;
 import rapidaid.backend_api.repositories.CrewRepository;
@@ -29,16 +30,39 @@ public class CrewService {
     }
 
     public CrewDTO createCrew(CrewDTO crewDTO) {
-        Crew crew = Crew.builder()
-                .crewCount(crewDTO.getCrewCount())
-                .crewType(crewDTO.getCrewType())
-                .crewStatus(crewDTO.getCrewStatus())
-                .longitude(crewDTO.getLongitude())
-                .latitude(crewDTO.getLatitude())
-                .build();
+        Crew crew = CrewMapper.mapToCrew(crewDTO);
 
         crewRepository.save(crew);
         return crewDTO;
+    }
+
+    public CrewDTO updateCrew(CrewDTO crewDTO, String id) {
+        Crew crew = crewRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Crew not found"));
+        if(!crewDTO.getCrewCount().equals(crew.getCrewCount())) {
+            crew.setCrewCount(crewDTO.getCrewCount());
+        }
+        if(!crewDTO.getCrewType().equals(crew.getCrewType())) {
+            crew.setCrewType(crewDTO.getCrewType());
+        }
+        if(!crewDTO.getCrewStatus().equals(crew.getCrewStatus())) {
+            crew.setCrewStatus(crewDTO.getCrewStatus());
+        }
+        if(crewDTO.getLongitude() != crew.getLongitude()) {
+            crew.setLongitude(crewDTO.getLongitude());
+        }
+        if(crewDTO.getLatitude() != crew.getLatitude()) {
+            crew.setLatitude(crewDTO.getLatitude());
+        }
+        crewRepository.save(crew);
+        return CrewMapper.mapToCrewDTO(crew);
+    }
+
+    public CrewDTO changeLocationCrew(ChangeLocationCrewDTO changeLocationCrewDTO, String id) {
+        Crew crew = crewRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Crew not found"));
+        crew.setLongitude(changeLocationCrewDTO.getLongitude());
+        crew.setLatitude(changeLocationCrewDTO.getLatitude());
+        crewRepository.save(crew);
+        return CrewMapper.mapToCrewDTO(crew);
     }
 
     public Boolean deleteCrew(String id) {

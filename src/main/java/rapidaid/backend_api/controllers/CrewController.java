@@ -2,6 +2,7 @@ package rapidaid.backend_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import rapidaid.backend_api.models.DTOs.ChangeLocationCrewDTO;
 import rapidaid.backend_api.models.DTOs.CrewDTO;
 import rapidaid.backend_api.services.CrewService;
 
@@ -32,12 +33,13 @@ public class CrewController {
     }
 
     @PutMapping("/crews/{id}")
-    public String updateCrew(@PathVariable Integer id){
-        return "updateCrew " + id;
+    public CrewDTO updateCrew(@RequestBody CrewDTO crewDTO, @PathVariable String id){
+        return crewService.updateCrew(crewDTO, id);
     }
+
     @PatchMapping("/crews/{id}")
-    public String patchCrew(@PathVariable Integer id){
-        return "patchCrew " + id;
+    public CrewDTO patchCrew(@RequestBody ChangeLocationCrewDTO changeLocationCrewDTO, @PathVariable String id){
+        return crewService.changeLocationCrew(changeLocationCrewDTO, id);
     }
 
     @DeleteMapping("/crews/{id}")

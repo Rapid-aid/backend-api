@@ -23,11 +23,11 @@ public class CrewMapperTest {
         CrewDTO crewDTO = CrewMapper.mapToCrewDTO(crew);
 
         assertNotNull(crewDTO);
-        assertEquals(1, crewDTO.getCrewCount());
-        assertEquals(CrewType.AMBULANCE, crewDTO.getCrewType());
-        assertEquals(CrewStatus.AVAILABLE, crewDTO.getCrewStatus());
-        assertEquals(1.0, crewDTO.getLongitude());
-        assertEquals(1.0, crewDTO.getLatitude());
+        assertEquals(crew.getCrewCount(), crewDTO.getCrewCount());
+        assertEquals(crew.getCrewType(), crewDTO.getCrewType());
+        assertEquals(crew.getCrewStatus(), crewDTO.getCrewStatus());
+        assertEquals(crew.getLongitude(), crewDTO.getLongitude());
+        assertEquals(crew.getLatitude(), crewDTO.getLatitude());
     }
 
     @Test
@@ -43,10 +43,10 @@ public class CrewMapperTest {
         Crew crew = CrewMapper.mapToCrew(crewDTO);
 
         assertNotNull(crew);
-        assertEquals(1, crew.getCrewCount());
-        assertEquals(CrewType.AMBULANCE, crew.getCrewType());
-        assertEquals(CrewStatus.AVAILABLE, crew.getCrewStatus());
-        assertEquals(1.0, crew.getLongitude());
-        assertEquals(1.0, crew.getLatitude());
+        assertEquals(crewDTO.getCrewCount(), crew.getCrewCount());
+        assertEquals(crewDTO.getCrewType(), crew.getCrewType());
+        assertEquals(crewDTO.getCrewStatus(), crew.getCrewStatus());
+        assertEquals(crewDTO.getLongitude(), crew.getLongitude());
+        assertEquals(crewDTO.getLatitude(), crew.getLatitude());
     }
 }

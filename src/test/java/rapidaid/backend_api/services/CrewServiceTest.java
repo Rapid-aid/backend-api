@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import rapidaid.backend_api.models.DTOs.ChangeLocationCrewDTO;
 import rapidaid.backend_api.models.DTOs.CrewDTO;
-import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.DTOs.mappers.CrewMapper;
 import rapidaid.backend_api.models.enums.CrewStatus;
 import rapidaid.backend_api.models.enums.CrewType;
@@ -33,8 +33,18 @@ public class CrewServiceTest {
 
     @Test
     public void getAllCrews_whenCrewsExist_thenShouldReturnCrewList() {
-        CrewDTO crew1 = CrewDTO.builder().crewCount(1).crewType(CrewType.AMBULANCE).crewStatus(CrewStatus.AVAILABLE).longitude(1.0).latitude(1.0).build();
-        CrewDTO crew2 = CrewDTO.builder().crewCount(1).crewType(CrewType.AMBULANCE).crewStatus(CrewStatus.AVAILABLE).longitude(1.0).latitude(1.0).build();
+        CrewDTO crew1 = CrewDTO.builder()
+                .crewCount(1)
+                .crewType(CrewType.AMBULANCE)
+                .crewStatus(CrewStatus.AVAILABLE)
+                .longitude(1.0)
+                .latitude(1.0).build();
+        CrewDTO crew2 = CrewDTO.builder()
+                .crewCount(1)
+                .crewType(CrewType.AMBULANCE)
+                .crewStatus(CrewStatus.AVAILABLE)
+                .longitude(1.0)
+                .latitude(1.0).build();
         when(crewRepository.findAll()).thenReturn(List.of(CrewMapper.mapToCrew(crew1), CrewMapper.mapToCrew(crew2)));
 
         List<CrewDTO> allCrews = crewService.getAllCrews();
@@ -66,7 +76,6 @@ public class CrewServiceTest {
                 .longitude(1.0)
                 .latitude(1.0)
                 .build();
-
         when(crewRepository.findById(crewId)).thenReturn(Optional.of(CrewMapper.mapToCrew(crewDTO)));
 
         CrewDTO foundCrew = crewService.getCrewById(crewId);
@@ -98,6 +107,86 @@ public class CrewServiceTest {
         assertNotNull(createdCrew);
         assertEquals(crewDTO, createdCrew);
         verify(crewRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void updateCrew_whenCrewExists_thenShouldReturnUpdatedCrew() {
+        String crewId = "1";
+        CrewDTO crewDTO = CrewDTO.builder()
+                .crewCount(1)
+                .crewType(CrewType.AMBULANCE)
+                .crewStatus(CrewStatus.AVAILABLE)
+                .longitude(1.0)
+                .latitude(1.0)
+                .build();
+        CrewDTO updatedCrewDTO = CrewDTO.builder()
+                .crewCount(2)
+                .crewType(CrewType.POLICE)
+                .crewStatus(CrewStatus.ON_MISSION)
+                .longitude(2.0)
+                .latitude(2.0)
+                .build();
+        when(crewRepository.findById(crewId)).thenReturn(Optional.of(CrewMapper.mapToCrew(crewDTO)));
+
+        CrewDTO updatedCrew = crewService.updateCrew(updatedCrewDTO, crewId);
+
+        assertNotNull(updatedCrew);
+        assertEquals(updatedCrewDTO, updatedCrew);
+        verify(crewRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void updateCrew_whenCrewDoesNotExist_thenShouldThrowIllegalArgumentException() {
+        String crewId = "1";
+        CrewDTO crewDTO = CrewDTO.builder()
+                .crewCount(1)
+                .crewType(CrewType.AMBULANCE)
+                .crewStatus(CrewStatus.AVAILABLE)
+                .longitude(1.0)
+                .latitude(1.0)
+                .build();
+        when(crewRepository.findById(crewId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> crewService.updateCrew(crewDTO, crewId));
+    }
+
+    @Test
+    public void changeLocationCrew_whenCrewExists_thenShouldReturnUpdatedCrew() {
+        String crewId = "1";
+        CrewDTO crewDTO = CrewDTO.builder()
+                .crewCount(1)
+                .crewType(CrewType.AMBULANCE)
+                .crewStatus(CrewStatus.AVAILABLE)
+                .longitude(1.0)
+                .latitude(1.0)
+                .build();
+        ChangeLocationCrewDTO changeLocationCrewDTO = ChangeLocationCrewDTO.builder()
+                .longitude(2.0)
+                .latitude(2.0)
+                .build();
+        when(crewRepository.findById(crewId)).thenReturn(Optional.of(CrewMapper.mapToCrew(crewDTO)));
+
+        CrewDTO updatedCrew = crewService.changeLocationCrew(changeLocationCrewDTO, crewId);
+
+        assertNotNull(updatedCrew);
+        assertEquals(changeLocationCrewDTO.getLongitude(), updatedCrew.getLongitude());
+        assertEquals(changeLocationCrewDTO.getLatitude(), updatedCrew.getLatitude());
+        assertEquals(crewDTO.getCrewCount(), updatedCrew.getCrewCount());
+        assertEquals(crewDTO.getCrewType(), updatedCrew.getCrewType());
+        assertEquals(crewDTO.getCrewStatus(), updatedCrew.getCrewStatus());
+        verify(crewRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void changeLocationCrew_whenCrewDoesNotExist_thenShouldThrowIllegalArgumentException() {
+        String crewId = "1";
+        ChangeLocationCrewDTO changeLocationCrewDTO = ChangeLocationCrewDTO.builder()
+                .longitude(2.0)
+                .latitude(2.0)
+                .build();
+        when(crewRepository.findById(crewId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> crewService.changeLocationCrew(changeLocationCrewDTO, crewId));
     }
 
     @Test
