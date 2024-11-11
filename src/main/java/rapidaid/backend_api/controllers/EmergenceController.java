@@ -4,7 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import rapidaid.backend_api.models.DTOs.CreateEmergencyDTO;
 import rapidaid.backend_api.models.DTOs.EmergencyDTO;
+import rapidaid.backend_api.models.enums.Status;
+import rapidaid.backend_api.models.enums.Type;
 import rapidaid.backend_api.services.EmergenceService;
+
+import java.util.List;
 
 @RestController
 public class EmergenceController {
@@ -16,8 +20,8 @@ public class EmergenceController {
     }
 
     @GetMapping("/emergencies")
-    public String getAllEmergencies(){
-        return "getAllEmergencies";
+    public List<EmergencyDTO> getAllEmergencies(){
+        return emergenceService.getAllEmergencies();
     }
 
     @PostMapping("/emergencies")
@@ -26,17 +30,22 @@ public class EmergenceController {
     }
 
     @GetMapping("/emergencies/{id}")
-    public String getEmergence(@PathVariable Integer id){
-        return "getEmergence " + id;
+    public EmergencyDTO getEmergence(@PathVariable String id){
+        return emergenceService.getEmergence(id);
+    }
+
+    @GetMapping("/emergencies/search")
+    public List<EmergencyDTO> searchEmergencies(@RequestParam(required = false) String type, @RequestParam(required = false) String status, @RequestParam(required = false) String keyword){
+        return emergenceService.searchEmergencies(type, status, keyword);
     }
 
     @PutMapping("/emergencies/{id}")
-    public String updateEmergence(@PathVariable Integer id){
-        return "updateEmergence " + id;
+    public EmergencyDTO updateEmergence(@PathVariable String id, @RequestBody EmergencyDTO emergencyDTO){
+        return emergenceService.updateEmergence(id, emergencyDTO);
     }
 
     @DeleteMapping("/emergencies/{id}")
-    public String deleteEmergence(@PathVariable Integer id){
-        return "deleteEmergence " + id;
+    public Boolean deleteEmergence(@PathVariable String id){
+        return emergenceService.deleteEmergence(id);
     }
 }

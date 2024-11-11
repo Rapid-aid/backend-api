@@ -19,6 +19,7 @@ public class DefaultSocketService implements WebSocketService {
     @Override
     public void notify(String emergencyId) {
         Message message = new Message(MessageType.emergencyNotification, emergencyId);
+        System.out.println("Sending message: " + message);
         template.convertAndSend("/topic/emergency", message);
     }
 }

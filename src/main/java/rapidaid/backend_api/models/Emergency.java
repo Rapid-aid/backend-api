@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import rapidaid.backend_api.models.enums.PriorityLevel;
 import rapidaid.backend_api.models.enums.Status;
+import rapidaid.backend_api.models.enums.Type;
 
 @Entity
 @Table(name = "EMERGENCIES")
@@ -19,9 +20,11 @@ public class Emergency {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private Status status;
-    private PriorityLevel priorityLevel;
-    private String location;
-    private String description;
     private Integer numberOfPeople;
+    private Type type;
+    private Status status;
+    private String description;
+    private PriorityLevel priorityLevel;
+    private Double latitude;
+    private Double longitude;
 }
