@@ -2,11 +2,15 @@ package rapidaid.backend_api.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import rapidaid.backend_api.models.DTOs.ChangeLocationCrewDTO;
+import rapidaid.backend_api.models.DTOs.CrewDTO;
 import rapidaid.backend_api.services.CrewService;
+
+import java.util.List;
 
 @RestController
 public class CrewController {
-    private CrewService crewService;
+    private final CrewService crewService;
 
     @Autowired
     public CrewController(CrewService crewService){
@@ -14,31 +18,32 @@ public class CrewController {
     }
 
     @GetMapping("/crews")
-    public String getAllCrews(){
-        return "getAllCrews";
+    public List<CrewDTO> getAllCrews(){
+        return crewService.getAllCrews();
     }
 
     @PostMapping("/crews")
-    public String createCrew(){
-        return "createCrew";
+    public CrewDTO createCrew(@RequestBody CrewDTO crewDTO){
+        return crewService.createCrew(crewDTO);
     }
 
     @GetMapping("/crews/{id}")
-    public String getCrew(@PathVariable Integer id){
-        return "getCrew " + id;
+    public CrewDTO getCrew(@PathVariable String id){
+        return crewService.getCrewById(id);
     }
 
     @PutMapping("/crews/{id}")
-    public String updateCrew(@PathVariable Integer id){
-        return "updateCrew " + id;
+    public CrewDTO updateCrew(@RequestBody CrewDTO crewDTO, @PathVariable String id){
+        return crewService.updateCrew(crewDTO, id);
     }
+
     @PatchMapping("/crews/{id}")
-    public String patchCrew(@PathVariable Integer id){
-        return "patchCrew " + id;
+    public CrewDTO patchCrew(@RequestBody ChangeLocationCrewDTO changeLocationCrewDTO, @PathVariable String id){
+        return crewService.changeLocationCrew(changeLocationCrewDTO, id);
     }
 
     @DeleteMapping("/crews/{id}")
-    public String deleteCrew(@PathVariable Integer id){
-        return "deleteCrew " + id;
+    public Boolean deleteCrew(@PathVariable String id){
+        return crewService.deleteCrew(id);
     }
 }

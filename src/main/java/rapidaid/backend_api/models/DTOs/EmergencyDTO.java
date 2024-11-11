@@ -1,25 +1,14 @@
-package rapidaid.backend_api.models;
+package rapidaid.backend_api.models.DTOs;
 
-
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import rapidaid.backend_api.models.enums.PriorityLevel;
 import rapidaid.backend_api.models.enums.Status;
 import rapidaid.backend_api.models.enums.Type;
 
-@Entity
-@Table(name = "EMERGENCIES")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class Emergency {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+public class EmergencyDTO {
     private Integer numberOfPeople;
     private Type type;
     private Status status;
