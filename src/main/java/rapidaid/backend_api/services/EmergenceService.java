@@ -9,6 +9,7 @@ import rapidaid.backend_api.models.Emergency;
 import rapidaid.backend_api.models.enums.Status;
 import rapidaid.backend_api.models.enums.Type;
 import rapidaid.backend_api.repositories.EmergenceRepository;
+import rapidaid.backend_api.websocket.service.WebSocketService;
 
 import java.util.List;
 
