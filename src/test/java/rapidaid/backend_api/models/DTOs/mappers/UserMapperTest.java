@@ -34,7 +34,7 @@ public class UserMapperTest {
                 .firstName("firstName")
                 .lastName("lastName")
                 .email("test@example.com")
-                .role(Role.RESPONDER)
+                .role(Role.USER)
                 .build();
 
         UserDTO userDTO = UserMapper.mapToUserDTO(user);

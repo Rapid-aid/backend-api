@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import rapidaid.backend_api.models.DTOs.ChangePasswordDTO;
-import rapidaid.backend_api.models.DTOs.CreateUserDTO;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.User;
@@ -22,6 +22,10 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserService userService;
 
@@ -32,8 +36,20 @@ public class UserServiceTest {
 
     @Test
     public void getAllUsers_whenUsersExist_thenShouldReturnUserList() {
-        User user1 = User.builder().id("1").username("testUser1").password("password").email("test1@exapmle.com").role(Role.RESPONDER).build();
-        User user2 = User.builder().id("2").username("testUser2").password("password").email("test2@exapmle.com").role(Role.RESPONDER).build();
+        User user1 = User.builder()
+                .id("1")
+                .firstName("test")
+                .lastName("user1")
+                .password("password")
+                .email("test1@exapmle.com")
+                .role(Role.USER).build();
+        User user2 = User.builder()
+                .id("2")
+                .firstName("test")
+                .lastName("user2")
+                .password("password")
+                .email("test2@exapmle.com")
+                .role(Role.USER).build();
         when(userRepository.findAll()).thenReturn(List.of(user1, user2));
 
         List<User> allUsers = userService.getAllUsers();
@@ -74,33 +90,18 @@ public class UserServiceTest {
     }
 
     @Test
-    public void registerUser_whenEmailOrUsernameExist_thenShouldThrowException(){
-        CreateUserDTO createUserDTO = CreateUserDTO.builder().username("testUser").email("test@example.com").password("password").build();
-        when(userRepository.existsByEmail(createUserDTO.getEmail())).thenReturn(true);
-
-        assertThrows(IllegalArgumentException.class, () -> userService.registerUser(createUserDTO));
-    }
-
-    @Test
-    public void registerUser_whenEmailDoesNotExist_thenShouldReturnUser() {
-        CreateUserDTO createUserDTO = CreateUserDTO.builder().username("testUser").email("test@example.com").password("password").build();
-        when(userRepository.existsByEmail(createUserDTO.getEmail())).thenReturn(false);
-        when(userRepository.existsByUsername(createUserDTO.getUsername())).thenReturn(false);
-
-        UserDTO userCreated = userService.registerUser(createUserDTO);
-
-        assertNotNull(userCreated);
-        assertEquals(createUserDTO.getUsername(), userCreated.getUsername());
-        assertEquals(createUserDTO.getEmail(), userCreated.getEmail());
-        verify(userRepository, times(1)).save(any(User.class));
-    }
-
-    @Test
     public void updateUser_whenUserExists_thenShouldReturnUser() {
         String userId = "1";
-        UpdateUserDTO updateUserDTO = UpdateUserDTO.builder().username("testUpdateUserDTO").email("test@example.com").build();
-        UserDTO userDTO = UserDTO.builder().username("testUpdateUserDTO").email("test@example.com").build();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(User.builder().id(userId).username("testUser").build()));
+        UpdateUserDTO updateUserDTO = UpdateUserDTO.builder()
+                .firstName("test")
+                .lastName("UpdateUserDTO")
+                .email("test@example.com").build();
+        UserDTO userDTO = UserDTO.builder()
+                .firstName("test")
+                .lastName("UpdateUserDTO")
+                .email("test@example.com").build();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(User.builder().id(userId)
+                .build()));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         UserDTO actualUserDTO = userService.updateUser(userId, updateUserDTO);
@@ -113,7 +114,10 @@ public class UserServiceTest {
     @Test
     public void updateUser_whenUserDoesNotExist_thenShouldThrowIllegalArgumentException() {
         String userId = "1";
-        UpdateUserDTO updateUserDTO = UpdateUserDTO.builder().username("testUpdateUserDTO").email("test@example.com").build();
+        UpdateUserDTO updateUserDTO = UpdateUserDTO.builder()
+                .firstName("test")
+                .lastName("UpdateUserDTO")
+                .email("test@example.com").build();
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> userService.updateUser(userId, updateUserDTO));
@@ -124,19 +128,21 @@ public class UserServiceTest {
     @Test
     public void changePassword_whenUserExists_thenShouldChangePassword() {
         String email = "test@example.com";
-        ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO(email, "newPassword");
+        ChangePasswordDTO changePasswordDTO = ChangePasswordDTO.builder().email(email).newPassword("newPassword").build();
         User user = User.builder().email(email).password("oldPassword").build();
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(changePasswordDTO.getNewPassword())).thenReturn("encodedPassword");
 
         userService.changePassword(changePasswordDTO);
 
+        assertEquals("encodedPassword", user.getPassword());
         verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
     public void changePassword_whenUserDoesNotExist_thenShouldThrowIllegalArgumentException() {
         String email = "test@example.com";
-        ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO(email, "newPassword");
+        ChangePasswordDTO changePasswordDTO = ChangePasswordDTO.builder().email(email).newPassword("newPassword").build();
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> userService.changePassword(changePasswordDTO));

@@ -38,7 +38,7 @@ public class CrewController {
     }
 
     @PatchMapping("/crews/{id}")
-    public CrewDTO patchCrew(@RequestBody ChangeLocationCrewDTO changeLocationCrewDTO, @PathVariable String id){
+    public CrewDTO changeLocation(@RequestBody ChangeLocationCrewDTO changeLocationCrewDTO, @PathVariable String id){
         return crewService.changeLocationCrew(changeLocationCrewDTO, id);
     }
 

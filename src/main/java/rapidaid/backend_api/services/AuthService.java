@@ -24,7 +24,7 @@ public class AuthService {
     public AuthenticationResponse register(CreateUserDTO createUserDTO) {
         User user = UserMapper.mapToUser(createUserDTO);
         user.setPassword(passwordEncoder.encode(createUserDTO.getPassword()));
-        user.setRole(Role.RESPONDER);
+        user.setRole(Role.USER);
         if(userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("User already exists");
         }

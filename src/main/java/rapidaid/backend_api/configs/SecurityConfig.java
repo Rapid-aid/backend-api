@@ -3,6 +3,7 @@ package rapidaid.backend_api.configs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,7 +29,13 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/emergencies").hasAuthority(Role.ADMIN.getRole())
+                                .requestMatchers("/crews/**").hasRole(Role.DISPATCHER.getRole())
+                                .requestMatchers(HttpMethod.POST, "/emergencies").hasAnyRole(Role.USER.getRole(), Role.DISPATCHER.getRole())
+                                .requestMatchers(HttpMethod.PUT, "/emergencies/{id}").hasAnyRole(Role.USER.getRole(), Role.DISPATCHER.getRole())
+                                .requestMatchers("/emergencies/**").hasRole(Role.DISPATCHER.getRole())
+                                .requestMatchers("/routes/**").hasRole(Role.DISPATCHER.getRole())
+                                .requestMatchers("/users/{id}").hasAnyRole(Role.USER.getRole(), Role.ADMIN.getRole())
+                                .requestMatchers("/users/**").hasRole(Role.ADMIN.getRole())
                                 .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
