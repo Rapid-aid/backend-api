@@ -23,8 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class CrewControllerIntegrationTest  extends AbstractMockMvcTest {
     @Autowired
-    private CrewRepository CrewRepository;
-    @Autowired
     private CrewRepository crewRepository;
 
     @Test
@@ -39,7 +37,7 @@ public class CrewControllerIntegrationTest  extends AbstractMockMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(crewDTO1)));
 
-        Crew crew1 = CrewRepository.findAll().getFirst();
+        Crew crew1 = crewRepository.findAll().getFirst();
 
         mockMvc.perform(get("/crews/{id}", crew1.getId())
                         .header("Authorization", "Bearer " + mockToken))
@@ -70,7 +68,7 @@ public class CrewControllerIntegrationTest  extends AbstractMockMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(updatedCrewDTO)));
 
-        Crew crew2 = CrewRepository.findAll().get(1);
+        Crew crew2 = crewRepository.findAll().get(1);
         ChangeLocationCrewDTO changeLocationCrewDTO = ChangeLocationCrewDTO.builder().latitude(50).longitude(42.457).build();
 
         mockMvc.perform(patch("/crews/{id}", crew2.getId())
