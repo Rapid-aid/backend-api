@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ChangePasswordDTO{
+public class UserCredentials {
     private String email;
-    private String newPassword;
+    private String password;
 }

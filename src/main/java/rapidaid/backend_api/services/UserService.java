@@ -1,25 +1,23 @@
 package rapidaid.backend_api.services;
 
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rapidaid.backend_api.models.DTOs.ChangePasswordDTO;
-import rapidaid.backend_api.models.DTOs.CreateUserDTO;
 import rapidaid.backend_api.models.DTOs.UpdateUserDTO;
 import rapidaid.backend_api.models.DTOs.UserDTO;
 import rapidaid.backend_api.models.DTOs.mappers.UserMapper;
 import rapidaid.backend_api.models.User;
-import rapidaid.backend_api.models.enums.Role;
 import rapidaid.backend_api.repositories.UserRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public User getUserById(String id) {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -29,26 +27,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public UserDTO registerUser(CreateUserDTO createUserDTO) {
-        User user = UserMapper.mapToUser(createUserDTO);
-        if (userRepository.existsByEmail(user.getEmail()) || userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Any account with email or name already exists");
-        }
-
-        userRepository.save(User.builder()
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .address(user.getAddress())
-                .phoneNumber(user.getPhoneNumber())
-                .role(Role.RESPONDER).build());
-        return UserMapper.mapToUserDTO(user);
-    }
-
     public UserDTO updateUser(String id, UpdateUserDTO updateUserDTO) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
-        if (updateUserDTO.getUsername() != null) {
-            user.setUsername(updateUserDTO.getUsername());
+        if (updateUserDTO.getFirstName() != null) {
+            user.setFirstName(updateUserDTO.getFirstName());
+        }
+        if (updateUserDTO.getLastName() != null) {
+            user.setLastName(updateUserDTO.getLastName());
         }
         if (updateUserDTO.getEmail() != null) {
             user.setEmail(updateUserDTO.getEmail());
@@ -66,12 +51,13 @@ public class UserService {
     public void changePassword(ChangePasswordDTO changePasswordDTO) {
         userRepository.findByEmail(changePasswordDTO.getEmail())
                 .ifPresentOrElse(user -> {
-                    user.setPassword(changePasswordDTO.getNewPassword());
+                    user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
                     userRepository.save(user);
                 }, () -> {
                     throw new IllegalArgumentException("User not found");
                 });
     }
+
 
     public Boolean deleteUser(String id) {
         if (userRepository.existsById(id)) {
